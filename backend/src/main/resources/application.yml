@@ -1,0 +1,93 @@
+spring:
+  application:
+    name: rwa-backend
+
+  # 기본 프로파일: H2 인메모리 DB (별도 DB 설치 불필요, 데모/개발용)
+  profiles:
+    active: local
+
+# HTTP 요청/응답을 UTF-8 로 강제 (한글 깨짐 방지)
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+---
+# ===== local 프로파일 (H2 인메모리) =====
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    # H2 파일 모드: 백엔드를 껐다 켜도 데이터가 ./data/rwadb.mv.db 파일에 유지됨
+    # (AUTO_SERVER=TRUE: 앱 실행 중에도 H2 콘솔/외부 툴에서 동시 접속 가능)
+    url: jdbc:h2:file:./data/rwadb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update             # 스키마를 유지하고 변경분만 반영 (데이터 보존)
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true                # http://localhost:8080/h2-console 로 DB 확인 가능
+      path: /h2-console
+
+server:
+  port: 8080
+
+# ===== 애플리케이션 커스텀 설정 =====
+app:
+  # JWT 서명 비밀키 (데모용 기본값, 운영 시 환경변수로 주입)
+  jwt:
+    secret: ${JWT_SECRET:local-only-change-me}
+    expiration-ms: 86400000        # 24시간
+
+  # 개인신용정보 암호화 키 (AES-256, 32바이트. 데모용 기본값)
+  crypto:
+    aes-key: ${AES_KEY:00000000000000000000000000000000}
+
+  # 블록체인 연동 설정
+  blockchain:
+    rpc-url: ${RPC_URL:http://127.0.0.1:8545}     # 로컬 Hardhat 노드
+    # 운영자 서명 키는 환경변수로 주입
+    operator-private-key: ${OPERATOR_PK:}
+    # 팩토리 컨트랙트 주소 (배포 후 deployments/*.json 에서 확인하여 주입)
+    factory-address: ${FACTORY_ADDRESS:0x5FbDB2315678afecb367f032d93F642f64180aa3}
+    chain-id: ${CHAIN_ID:31337}                   # Hardhat 로컬 체인 ID
+    # KYC 승인 시 화이트리스트 등록 대상 토큰 주소
+    # 부동산 등록 후 발행된 토큰 컨트랙트 주소로 업데이트 필요
+    default-token-address: ${DEFAULT_TOKEN_ADDRESS:}
+
+  # 이상거래 탐지 임계치 (design.md 4.5)
+  monitoring:
+    large-trade-ratio-percent: ${ANOMALY_LARGE_TRADE_PCT:10.0}  # 총량의 10% 초과 거래 = 대량(HIGH)
+    rapid-repeat-window-seconds: ${ANOMALY_RAPID_WINDOW_SEC:60}  # 단기 반복 판정 시간창
+    rapid-repeat-threshold: ${ANOMALY_RAPID_THRESHOLD:3}         # 시간창 내 3회 초과 = 단기반복(MEDIUM)
+
+---
+# ===== postgres 프로파일 (PostgreSQL) =====
+spring:
+  config:
+    activate:
+      on-profile: postgres
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/rwadb}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:rwa}
+    password: ${DB_PASSWORD:rwa}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false

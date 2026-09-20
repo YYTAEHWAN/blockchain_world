@@ -1,0 +1,71 @@
+# ===== 공통 =====
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ===== Node / Hardhat (contracts, frontend) =====
+node_modules/
+dist/
+build/
+coverage/
+cache/
+artifacts/
+typechain/
+typechain-types/
+.vite/
+
+# Hardhat
+contracts/cache/
+contracts/artifacts/
+deployments/local/
+
+# ===== Java / Spring (backend) =====
+backend/target/
+backend/build/
+backend/.gradle/
+
+# H2 파일 DB (로컬 데이터, 커밋 금지)
+data/
+*.mv.db
+*.trace.db
+*.class
+*.jar
+!gradle-wrapper.jar
+!maven-wrapper.jar
+
+# ===== IDE =====
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# ===== 비밀정보 (절대 커밋 금지) =====
+# 운영자 개인키, 니모닉, RPC 키, DB 비밀번호 등
+secrets.json
+mnemonic.txt
+*.secret
+
+# 짜잘짜잘
+docs/
+
+# ===== 서버 로그 / 개인정보 포함 텍스트 (커밋 금지) =====
+docs/https만들때 로그 나온 거.txt
+*.log.txt
+
+# ===== docs 폴더 전체 커밋 금지 (개인정보/서버정보/지원 전략 포함) =====
+docs/
+
+contracts/deployments/
+
+# ===== 개인 질문/노트 파일 (커밋 금지) =====
+ai에게 질문.ini
+README_for_local.md
+
+# Kiro workspace metadata (public repository 제외)
+.kiro/
