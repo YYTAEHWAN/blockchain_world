@@ -25,6 +25,7 @@ export interface KycStatus {
   reviewedBy: string | null
   reviewedAt: string | null
   createdAt: string | null
+  walletSequence: number | null  // 해당 투자자의 몇 번째 지갑 주소인지 (null 가능)
 }
 
 export interface Holding {
@@ -80,6 +81,7 @@ export interface KycHistory {
   investorId: number
   investorEmail: string | null
   walletAddress: string
+  walletSequence: number | null  // 해당 투자자의 몇 번째 지갑 주소인지
   status: string
   rejectReason: string | null
   reviewedBy: string | null
@@ -127,6 +129,7 @@ export interface AdminTx {
   amount: number
   txHash: string
   createdAt: string
+  walletSequence: number | null
 }
 
 export interface AnomalyFlag {

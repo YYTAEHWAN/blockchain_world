@@ -55,6 +55,8 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/properties/**").permitAll()
                         // 관리자 전용 (요구사항 7-2)
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // 개발용 도구 API (관리자 전용)
+                        .requestMatchers("/api/dev/**").hasRole("ADMIN")
                         // 그 외는 인증 필요
                         .anyRequest().authenticated()
                 )
@@ -78,7 +80,10 @@ public class SecurityConfig {
         // 개발 및 운영 React 앱의 정확한 Origin만 허용
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
+                "http://localhost:5174",
                 "http://localhost:3000",
+                "http://127.0.0.1:5173",
+                "http://127.0.0.1:5174",
                 "https://bc-world-portfolio.online",
                 "https://www.bc-world-portfolio.online"
         ));

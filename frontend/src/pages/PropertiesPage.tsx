@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { api, errorMessage } from '../api/client'
 import type { Property, InvestmentTx } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
+import { TxHashDisplay } from '../components/TxHashDisplay'
 
 export function PropertiesPage() {
   const { user, isAdmin } = useAuth()
@@ -78,7 +79,7 @@ export function PropertiesPage() {
                     <td>{t.type === 'BUY' ? '매수' : t.type}</td>
                     <td>{t.quantity.toLocaleString()}</td>
                     <td>{t.amount.toLocaleString()}원</td>
-                    <td className="addr">{t.txHash?.slice(0, 16)}...</td>
+                    <td><TxHashDisplay hash={t.txHash} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -99,22 +100,66 @@ function PropertyCard({
   canBuy: boolean
   onBought: (quantity: number, amount: number, propertyName: string) => void
 }) {
-  const [qty, setQty] = useState(1)
+  const [qty, setQty] = useState('1')  // 문자열로 변경
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
 
   const onBuy = async () => {
     setErr(null)
+    
+    // 입력값 검증
+    const quantity = parseInt(qty)
+    if (isNaN(quantity) || quantity <= 0) {
+      setErr('매수할 개수를 입력해주세요 (1개 이상)')
+      return
+    }
+    
+    if (quantity > property.remainingSupply) {
+      setErr(`최대 ${property.remainingSupply.toLocaleString()}개까지 매수 가능합니다`)
+      return
+    }
+    
     setBusy(true)
     try {
-      const { data } = await api.post('/investments', { propertyId: property.id, quantity: qty })
+      const { data } = await api.post('/investments', { propertyId: property.id, quantity })
       onBought(Number(data.quantity), Number(data.amount), property.name)
-      setQty(1)
+      setQty('1')  // 매수 후 초기화
     } catch (e) {
       setErr(errorMessage(e))
     } finally {
       setBusy(false)
     }
+  }
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    
+    // 빈 문자열 허용
+    if (value === '') {
+      setQty('')
+      return
+    }
+    
+    // 숫자만 입력 가능
+    const numValue = parseInt(value)
+    if (isNaN(numValue)) {
+      return
+    }
+    
+    // 최소값 0 (사용자가 0을 입력할 수 있도록)
+    // 실제 매수 시에는 0 이상 체크
+    if (numValue < 0) {
+      setQty('0')
+      return
+    }
+    
+    // 최대값 제한 (잔여 청약량)
+    if (numValue > property.remainingSupply) {
+      setQty(property.remainingSupply.toString())
+      return
+    }
+    
+    setQty(numValue.toString())
   }
 
   return (
@@ -133,20 +178,25 @@ function PropertyCard({
           <div className="buy-box">
             <input
               type="number"
-              min={1}
+              min="0"
               max={property.remainingSupply}
               value={qty}
-              onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
+              onChange={handleQuantityChange}
+              placeholder="매수할 개수"
             />
             <button onClick={onBuy} disabled={busy || property.remainingSupply <= 0}>
               {busy ? '처리 중...' : '매수'}
             </button>
           </div>
+          <p className="tiny-hint">매수할 개수를 입력해주세요 (1개 이상)</p>
+          {property.remainingSupply > 0 && (
+            <p className="hint">최대 {property.remainingSupply.toLocaleString()}개까지 매수 가능합니다</p>
+          )}
           <p className="tiny-hint">매수 시 계좌관리기관(운영자)이 온체인 이전을 대행합니다. KYC 승인이 필요합니다.</p>
         </>
       )}
       {err && <p className="error">{err}</p>}
-      <p className="addr">토큰: {property.tokenContractAddress}</p>
+      <p className="addr">토큰: {property.tokenContractAddress ? property.tokenContractAddress : '없음'}</p>
     </div>
   )
 }

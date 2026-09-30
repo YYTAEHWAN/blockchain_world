@@ -7,6 +7,8 @@ import com.hanwha.rwa.blockchain.BlockchainClient;
 import com.hanwha.rwa.common.exception.ApiException;
 import com.hanwha.rwa.investment.domain.InvestmentTx;
 import com.hanwha.rwa.investment.repository.InvestmentTxRepository;
+import com.hanwha.rwa.kyc.domain.KycApplication;
+import com.hanwha.rwa.kyc.repository.KycApplicationRepository;
 import com.hanwha.rwa.monitoring.domain.AnomalyFlag;
 import com.hanwha.rwa.monitoring.dto.AdminTxView;
 import com.hanwha.rwa.monitoring.dto.AnomalyFlagResponse;
@@ -23,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 모니터링 조회 서비스 (design.md 4.5, requirements 요구사항 6-1, 6-2, 6-4)
@@ -38,6 +41,7 @@ public class MonitoringService {
     private final AnomalyFlagRepository anomalyFlagRepository;
     private final InvestorRepository investorRepository;
     private final PropertyRepository propertyRepository;
+    private final KycApplicationRepository kycApplicationRepository;
     private final BlockchainClient blockchainClient;
     private final CurrentUserService currentUserService;
 
@@ -45,12 +49,14 @@ public class MonitoringService {
                              AnomalyFlagRepository anomalyFlagRepository,
                              InvestorRepository investorRepository,
                              PropertyRepository propertyRepository,
+                             KycApplicationRepository kycApplicationRepository,
                              BlockchainClient blockchainClient,
                              CurrentUserService currentUserService) {
         this.investmentTxRepository = investmentTxRepository;
         this.anomalyFlagRepository = anomalyFlagRepository;
         this.investorRepository = investorRepository;
         this.propertyRepository = propertyRepository;
+        this.kycApplicationRepository = kycApplicationRepository;
         this.blockchainClient = blockchainClient;
         this.currentUserService = currentUserService;
     }
@@ -63,6 +69,7 @@ public class MonitoringService {
     public List<AdminTxView> listAllTransactions() {
         Map<Long, String> investorEmailCache = new HashMap<>();
         Map<Long, String> propertyNameCache = new HashMap<>();
+        Map<Long, Integer> investorWalletSequenceCache = new HashMap<>();
 
         return investmentTxRepository.findAll().stream()
                 .sorted(Comparator.comparing(InvestmentTx::getCreatedAt).reversed())
@@ -78,7 +85,26 @@ public class MonitoringService {
                         tx.getQuantity(),
                         tx.getAmount(),
                         tx.getTxHash(),
-                        tx.getCreatedAt()
+                        tx.getCreatedAt(),
+                        investorWalletSequenceCache.computeIfAbsent(tx.getInvestorId(), id -> {
+                            // 투자자 정보 조회
+                            Optional<Investor> investorOpt = investorRepository.findById(id);
+                            if (investorOpt.isEmpty() || investorOpt.get().getWalletAddress() == null) {
+                                return null;
+                            }
+                            
+                            String currentWallet = investorOpt.get().getWalletAddress();
+                            
+                            // 해당 투자자의 모든 KYC 신청 중 현재 지갑 주소와 일치하는 것을 찾음
+                            List<KycApplication> kycApps = kycApplicationRepository.findByInvestorIdOrderByCreatedAtAsc(id);
+                            for (KycApplication kyc : kycApps) {
+                                if (currentWallet.equals(kyc.getWalletAddress())) {
+                                    return kyc.getWalletSequence();
+                                }
+                            }
+                            
+                            return null;
+                        })
                 ))
                 .toList();
     }

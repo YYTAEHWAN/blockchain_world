@@ -13,6 +13,7 @@ public record KycHistoryView(
         Long investorId,
         String investorEmail,
         String walletAddress,
+        Integer walletSequence,  // 해당 투자자의 몇 번째 지갑 주소인지
         String status,
         String rejectReason,
         String reviewedBy,

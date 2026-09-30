@@ -250,12 +250,29 @@ public class BlockchainClient {
 
             // 영수증이 올 때까지 폴링 (로컬 노드라 보통 즉시)
             TransactionReceipt receipt = waitForReceipt(txHash);
+            
+            // 트랜잭션 상태 확인 (0x0 = 실패, 0x1 = 성공)
+            if (!"0x1".equals(receipt.getStatus())) {
+                log.error("트랜잭션 실패 status={}, txHash={}", receipt.getStatus(), txHash);
+                throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "트랜잭션 실행 실패: 상태 코드 " + receipt.getStatus());
+            }
 
             // PropertyTokenCreated(uint256 indexed propertyId, address indexed tokenAddress, ...)
             // indexed 파라미터는 topics에 들어가므로, topics[2] 가 tokenAddress
             // topics[0] = keccak256("PropertyTokenCreated(uint256,address,address,string,string,uint256)")
             String eventSignatureHash = Hash.sha3String(
                     "PropertyTokenCreated(uint256,address,address,string,string,uint256)");
+            
+            log.debug("이벤트 시그니처 해시: {}", eventSignatureHash);
+            log.debug("receipt logs 개수: {}", receipt.getLogs().size());
+            
+            // 디버깅을 위해 모든 로그 출력
+            for (int i = 0; i < receipt.getLogs().size(); i++) {
+                var logEntry = receipt.getLogs().get(i);
+                log.debug("로그[{}]: topics={}, data={}, address={}", 
+                        i, logEntry.getTopics(), logEntry.getData(), logEntry.getAddress());
+            }
 
             String tokenAddress = receipt.getLogs().stream()
                     .filter(l -> !l.getTopics().isEmpty()
@@ -264,10 +281,16 @@ public class BlockchainClient {
                     .map(l -> {
                         // topics[2] = tokenAddress (indexed, 32바이트 패딩)
                         String raw = l.getTopics().get(2);
-                        return "0x" + raw.substring(raw.length() - 40);
+                        String address = "0x" + raw.substring(raw.length() - 40);
+                        log.debug("이벤트 발견: topics={}, 추출된 주소={}", l.getTopics(), address);
+                        return address;
                     })
-                    .orElseThrow(() -> new ApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-                            "PropertyTokenCreated 이벤트를 찾을 수 없습니다"));
+                    .orElseThrow(() -> {
+                        log.error("PropertyTokenCreated 이벤트를 찾을 수 없습니다. txHash={}, 이벤트 시그니처={}", 
+                                txHash, eventSignatureHash);
+                        return new ApiException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                "PropertyTokenCreated 이벤트를 찾을 수 없습니다");
+                    });
 
             log.info("PropertyToken 배포 완료 address={}", tokenAddress);
             return tokenAddress;

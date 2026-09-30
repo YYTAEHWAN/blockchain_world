@@ -132,6 +132,64 @@ button.danger { background: #c0392b; color: #fff; }
 .error { color: #c0392b; font-size: 14px; }
 .addr { font-size: 11px; color: var(--muted); word-break: break-all; margin-top: 10px; }
 
+.tx-hash-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  position: relative;
+}
+.tx-hash-value {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  margin-top: 0;
+  white-space: nowrap;
+}
+.tx-hash-value::after {
+  content: attr(data-full-hash);
+  position: absolute;
+  z-index: 9999;
+  left: 0;
+  top: calc(100% + 6px);
+  width: max-content;
+  max-width: min(600px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--text);
+  color: #fff;
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+  word-break: break-all;
+}
+.tx-hash-value:hover::after,
+.tx-hash-value:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  /* 텍스트 선택 활성화 */
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  cursor: text;
+}
+.tx-copy-button {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
 .kv { margin: 0; }
 .kv > div { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed var(--border); }
 .kv dt { color: var(--muted); font-size: 13px; }
@@ -259,3 +317,272 @@ button.sm { padding: 5px 10px; font-size: 12px; }
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* ===== 지갑 변경 경고 카드 ===== */
+.warning-card {
+  background: #fff7f1;
+  border: 1px solid var(--orange);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.warning-card h4 {
+  margin: 0 0 8px 0;
+  color: var(--orange);
+  font-size: 15px;
+}
+.warning-card p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.warning-card p.hint {
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  color: #666;
+}
+/* ===== KYC 지갑 주소 hover 및 복사 버튼 스타일 ===== */
+
+.wallet-address-hoverable {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  margin-top: 0;
+  white-space: nowrap;
+  text-decoration: underline dotted #999;
+  text-underline-offset: 3px;
+}
+.wallet-address-hoverable::after {
+  content: attr(title);
+  position: absolute;
+  z-index: 9999;
+  left: 0;
+  top: calc(100% + 6px);
+  width: max-content;
+  max-width: min(600px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--text);
+  color: #fff;
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+  word-break: break-all;
+}
+.wallet-address-hoverable:hover::after,
+.wallet-address-hoverable:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.kv .addr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.copy-btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  height: fit-content;
+}
+.copy-btn-inline {
+  padding: 2px 6px;
+  font-size: 10px;
+  margin-left: 8px;
+  height: fit-content;
+}
+
+/* KYC 내역 테이블 스타일 */
+.history-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 13px;
+}
+.history-table th, .history-table td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.history-table th {
+  background: #f0f3f7;
+  color: var(--muted);
+  font-weight: 600;
+}
+.history-table tbody tr:hover {
+  background-color: #f9fafc;
+}
+.history-table tbody tr.current {
+  background-color: #f0f7f1;
+  border-left: 3px solid #1e874b;
+}
+.history-table .wallet-address {
+  cursor: help;
+  text-decoration: underline dotted #999;
+  text-underline-offset: 3px;
+}
+.history-toggle {
+  margin-bottom: 16px;
+}
+.kyc-history-section {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+/* ===== KYC 페이지 레이아웃 개선 ===== */
+
+.kyc-page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.kyc-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.kyc-left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kyc-right-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kyc-right-section .card {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.history-header h3 {
+  margin: 0;
+}
+
+.history-table.compact table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.history-table.compact th,
+.history-table.compact td {
+  padding: 6px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.history-table.compact th {
+  background: #f8f9fa;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-table.compact tbody tr:hover {
+  background-color: #f9fafc;
+}
+
+.history-table.compact tbody tr.current {
+  background-color: #f0f7f1;
+  border-left: 3px solid #1e874b;
+}
+
+.history-table.compact .status-badge {
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .kyc-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .kyc-right-section .card {
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .history-table.compact table {
+    font-size: 11px;
+  }
+  
+  .history-table.compact th,
+  .history-table.compact td {
+    padding: 4px 6px;
+  }
+  
+  .kyc-right-section .card {
+    max-height: 350px;
+  }
+}
+
+
+/* ===== 투자자 관리 페이지 스타일 ===== */
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-admin {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.badge-investor {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin: 10px 0;
+}
+
+.table tbody tr:hover {
+  background-color: #f9fafc;
+}
+
+
+/* 툴팁 내 텍스트 선택 가능 - 가상 요소 내에서는 제한적 지원 */
+.tx-hash-value:hover::after,

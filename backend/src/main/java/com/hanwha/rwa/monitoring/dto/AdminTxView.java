@@ -18,6 +18,7 @@ public record AdminTxView(
         Long quantity,
         BigDecimal amount,
         String txHash,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        Integer walletSequence
 ) {
 }

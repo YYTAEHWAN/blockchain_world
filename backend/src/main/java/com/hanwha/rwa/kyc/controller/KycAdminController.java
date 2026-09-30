@@ -55,4 +55,10 @@ public class KycAdminController {
                                     @Valid @RequestBody KycRejectRequest request) {
         return kycService.reject(id, request.reason());
     }
+
+    /** 이미 승인된 KYC에 대한 화이트리스트 재등록 */
+    @PostMapping("/{id}/reregister-whitelist")
+    public KycStatusResponse reRegisterWhitelist(@PathVariable Long id) {
+        return kycService.reRegisterWhitelist(id);
+    }
 }

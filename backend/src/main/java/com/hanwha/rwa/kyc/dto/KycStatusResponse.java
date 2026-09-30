@@ -10,6 +10,7 @@ public record KycStatusResponse(
         Long id,
         String status,
         String walletAddress,
+        Integer walletSequence,  // 해당 투자자의 몇 번째 지갑 주소인지
         String rejectReason,
         String whitelistTxHash,
         String reviewedBy,
@@ -21,6 +22,7 @@ public record KycStatusResponse(
                 k.getId(),
                 k.getStatus().name(),
                 k.getWalletAddress(),
+                k.getWalletSequence(),
                 k.getRejectReason(),
                 k.getWhitelistTxHash(),
                 k.getReviewedBy(),

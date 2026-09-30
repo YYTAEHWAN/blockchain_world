@@ -9,7 +9,11 @@ import java.util.Optional;
 
 public interface KycApplicationRepository extends JpaRepository<KycApplication, Long> {
 
-    Optional<KycApplication> findByInvestorId(Long investorId);
+    Optional<KycApplication> findFirstByInvestorIdOrderByIdDesc(Long investorId);
+
+    List<KycApplication> findByInvestorIdOrderByCreatedAtAsc(Long investorId);
+
+    List<KycApplication> findByInvestorIdAndStatusOrderByCreatedAtDesc(Long investorId, KycStatus status);
 
     List<KycApplication> findByStatus(KycStatus status);
 

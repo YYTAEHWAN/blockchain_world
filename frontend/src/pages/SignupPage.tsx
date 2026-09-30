@@ -48,7 +48,7 @@ export function SignupPage() {
         </label>
         {hasWallet && (
           <button type="button" className="secondary" onClick={onConnect}>
-            {account ? `연결됨: ${account.slice(0, 8)}...` : 'MetaMask 연결'}
+            {account ? `연결됨: ${account.slice(0, 8)}...${account.slice(-6)}` : 'MetaMask 연결'}
           </button>
         )}
         <p className="tiny-hint">

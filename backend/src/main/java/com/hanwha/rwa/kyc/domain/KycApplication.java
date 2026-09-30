@@ -52,17 +52,22 @@ public class KycApplication {
     @Column(name = "whitelist_tx_hash")
     private String whitelistTxHash;
 
+    /** 해당 투자자의 몇 번째 지갑 주소인지 (1부터 시작) */
+    @Column(name = "wallet_sequence")
+    private Integer walletSequence;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     protected KycApplication() {
     }
 
-    public KycApplication(Long investorId, String encryptedName, String encryptedIdNo, String walletAddress) {
+    public KycApplication(Long investorId, String encryptedName, String encryptedIdNo, String walletAddress, Integer walletSequence) {
         this.investorId = investorId;
         this.encryptedName = encryptedName;
         this.encryptedIdNo = encryptedIdNo;
         this.walletAddress = walletAddress;
+        this.walletSequence = walletSequence;
         this.status = KycStatus.PENDING;
         this.createdAt = LocalDateTime.now();
     }
@@ -88,10 +93,11 @@ public class KycApplication {
      * 기존 반려 레코드를 재사용하여 새 신청 정보로 갱신하고 다시 심사중(PENDING)으로 되돌린다.
      * 이전 심사 결과(심사자·반려사유·심사일시)는 초기화한다.
      */
-    public void reapply(String encryptedName, String encryptedIdNo, String walletAddress) {
+    public void reapply(String encryptedName, String encryptedIdNo, String walletAddress, Integer walletSequence) {
         this.encryptedName = encryptedName;
         this.encryptedIdNo = encryptedIdNo;
         this.walletAddress = walletAddress;
+        this.walletSequence = walletSequence;
         this.status = KycStatus.PENDING;
         this.rejectReason = null;
         this.reviewedBy = null;
@@ -111,5 +117,15 @@ public class KycApplication {
     public String getReviewedBy() { return reviewedBy; }
     public LocalDateTime getReviewedAt() { return reviewedAt; }
     public String getWhitelistTxHash() { return whitelistTxHash; }
+    public Integer getWalletSequence() { return walletSequence; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    // ===== setter (필요한 것만) =====
+    public void setWhitelistTxHash(String whitelistTxHash) {
+        this.whitelistTxHash = whitelistTxHash;
+    }
+    
+    public void setWalletSequence(Integer walletSequence) {
+        this.walletSequence = walletSequence;
+    }
 }

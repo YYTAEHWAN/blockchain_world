@@ -15,6 +15,13 @@ const STATUS_CLASS: Record<string, string> = {
   PENDING: 'status-pending', APPROVED: 'status-approved', REJECTED: 'status-rejected',
 }
 
+// 지갑 주소 복사 함수
+const copyWalletAddress = (address: string) => {
+  navigator.clipboard.writeText(address)
+    .then(() => alert('지갑 주소가 복사되었습니다.'))
+    .catch(() => alert('복사에 실패했습니다.'))
+}
+
 export function AdminKycPage() {
   const [pending, setPending] = useState<Pending[]>([])
   const [history, setHistory] = useState<KycHistory[]>([])
@@ -98,7 +105,21 @@ export function AdminKycPage() {
                 {pending.map((p) => (
                   <tr key={p.id}>
                     <td>{p.id}</td>
-                    <td className="addr">{p.walletAddress?.slice(0, 12)}...</td>
+                    <td className="addr">
+                      <span 
+                        className="wallet-address-hoverable"
+                        title={p.walletAddress}
+                      >
+                        {p.walletAddress ? `${p.walletAddress.slice(0, 8)}...${p.walletAddress.slice(-6)}` : ''}
+                      </span>
+                      <button 
+                        type="button" 
+                        className="small secondary copy-btn-inline"
+                        onClick={() => copyWalletAddress(p.walletAddress)}
+                      >
+                        복사
+                      </button>
+                    </td>
                     <td><button className="secondary sm" onClick={() => openDetail(p.id)}>상세</button></td>
                   </tr>
                 ))}
@@ -115,7 +136,24 @@ export function AdminKycPage() {
                 <div><dt>신청 ID</dt><dd>{detail.id}</dd></div>
                 <div><dt>이름</dt><dd>{detail.name}</dd></div>
                 <div><dt>식별번호</dt><dd>{detail.idNumber}</dd></div>
-                <div><dt>지갑</dt><dd className="addr">{detail.walletAddress}</dd></div>
+                <div>
+                  <dt>지갑</dt>
+                  <dd className="addr">
+                    <span 
+                      className="wallet-address-hoverable"
+                      title={detail.walletAddress}
+                    >
+                      {detail.walletAddress}
+                    </span>
+                    <button 
+                      type="button" 
+                      className="small secondary copy-btn"
+                      onClick={() => copyWalletAddress(detail.walletAddress)}
+                    >
+                      복사
+                    </button>
+                  </dd>
+                </div>
                 <div><dt>상태</dt><dd>{detail.status}</dd></div>
               </dl>
               <p className="tiny-hint">복호화 조회 시 개인신용정보 접근 로그가 기록됩니다 (요구사항 7-3).</p>
@@ -137,8 +175,9 @@ export function AdminKycPage() {
         <table className="table">
           <thead>
             <tr>
-              <th>ID</th><th>투자자</th><th>지갑</th><th>상태</th>
+              <th>ID</th><th>투자자</th><th>지갑</th><th>순번</th><th>상태</th>
               <th>심사자</th><th>심사일시</th><th>신청일시</th><th>비고</th>
+              <th>복사</th>
             </tr>
           </thead>
           <tbody>
@@ -146,12 +185,29 @@ export function AdminKycPage() {
               <tr key={h.id}>
                 <td>{h.id}</td>
                 <td>{h.investorEmail ?? h.investorId}</td>
-                <td className="addr">{h.walletAddress?.slice(0, 12)}...</td>
+                <td className="addr">
+                  <span 
+                    className="wallet-address-hoverable"
+                    title={h.walletAddress}
+                  >
+                    {h.walletAddress ? `${h.walletAddress.slice(0, 8)}...${h.walletAddress.slice(-6)}` : ''}
+                  </span>
+                </td>
+                <td>{h.walletSequence ? `${h.walletSequence}번째` : '-'}</td>
                 <td><span className={STATUS_CLASS[h.status]}>{STATUS_LABEL[h.status] ?? h.status}</span></td>
                 <td>{h.reviewedBy ?? '-'}</td>
                 <td>{h.reviewedAt ? new Date(h.reviewedAt).toLocaleString() : '-'}</td>
                 <td>{new Date(h.createdAt).toLocaleString()}</td>
                 <td>{h.status === 'REJECTED' ? (h.rejectReason ?? '') : ''}</td>
+                <td>
+                  <button 
+                    type="button" 
+                    className="small secondary"
+                    onClick={() => copyWalletAddress(h.walletAddress)}
+                  >
+                    복사
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

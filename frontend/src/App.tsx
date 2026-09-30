@@ -11,6 +11,8 @@ import { AdminPropertyPage } from './pages/admin/AdminPropertyPage'
 import { AdminDistributionPage } from './pages/admin/AdminDistributionPage'
 import { AdminMonitoringPage } from './pages/admin/AdminMonitoringPage'
 import { AdminActionsPage } from './pages/admin/AdminActionsPage'
+import { AdminInvestorPage } from './pages/admin/AdminInvestorPage'
+import { DevToolsPage } from './pages/DevToolsPage'
 import type { ReactNode } from 'react'
 
 /** 로그인 필요 라우트 */
@@ -44,6 +46,8 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/distributions': '배당 집행',
   '/admin/monitoring': '모니터링 대시보드',
   '/admin/actions': '조치 이력',
+  '/admin/investors': '투자자 관리',
+  '/devtools': '개발 도구',
 }
 
 function Header() {
@@ -67,6 +71,8 @@ function Header() {
             <NavLink to="/admin/distributions">배당집행</NavLink>
             <NavLink to="/admin/monitoring">모니터링</NavLink>
             <NavLink to="/admin/actions">조치이력</NavLink>
+            <NavLink to="/admin/investors">투자자관리</NavLink>
+            <NavLink to="/devtools">개발도구</NavLink>
           </>
         )}
       </nav>
@@ -119,6 +125,8 @@ export function App() {
           <Route path="/admin/distributions" element={<RequireAdmin><AdminDistributionPage /></RequireAdmin>} />
           <Route path="/admin/monitoring" element={<RequireAdmin><AdminMonitoringPage /></RequireAdmin>} />
           <Route path="/admin/actions" element={<RequireAdmin><AdminActionsPage /></RequireAdmin>} />
+          <Route path="/admin/investors" element={<RequireAdmin><AdminInvestorPage /></RequireAdmin>} />
+          <Route path="/devtools" element={<RequireAdmin><DevToolsPage /></RequireAdmin>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -38,7 +38,7 @@ export function AdminPropertyPage() {
         description: form.description || undefined,
       }
       const { data } = await api.post<Property>('/admin/properties', body)
-      setMsg(`등록 완료: ${data.name} (토큰 ${data.tokenContractAddress})`)
+      setMsg(`등록 완료: ${data.name} (토큰 ${data.tokenContractAddress ? `${data.tokenContractAddress.slice(0, 8)}...${data.tokenContractAddress.slice(-6)}` : '없음'})`)
       setForm({ name: '', address: '', appraisalValue: '', totalSupply: '', pricePerToken: '', description: '' })
       load()
     } catch (e) {

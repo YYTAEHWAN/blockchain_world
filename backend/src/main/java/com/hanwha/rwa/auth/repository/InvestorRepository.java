@@ -3,6 +3,7 @@ package com.hanwha.rwa.auth.repository;
 import com.hanwha.rwa.auth.domain.Investor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,4 +17,7 @@ public interface InvestorRepository extends JpaRepository<Investor, Long> {
 
     /** 동일 지갑 주소를 쓰는 다른 투자자 조회 (대소문자 무시) */
     Optional<Investor> findByWalletAddressIgnoreCase(String walletAddress);
+    
+    /** 이메일로 검색 (부분 일치, 대소문자 무시) */
+    List<Investor> findByEmailContainingIgnoreCase(String email);
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, errorMessage } from '../api/client'
 import type { Holding, InvestmentTx, AccountStatus } from '../api/types'
+import { TxHashDisplay } from '../components/TxHashDisplay'
 
 export function PortfolioPage() {
   const [holdings, setHoldings] = useState<Holding[]>([])
@@ -46,7 +47,36 @@ export function PortfolioPage() {
   if (loading) return <p>불러오는 중...</p>
   if (error) return <p className="error">{error}</p>
 
-  const totalValuation = holdings.reduce((s, h) => s + h.valuation, 0)
+  // 중복 토큰 주소 필터링: 같은 토큰 주소를 가진 부동산 중 하나만 표시
+  const uniqueHoldings = holdings.reduce((acc, current) => {
+    // 토큰 주소가 없는 경우 그대로 추가
+    if (!current.tokenContractAddress) {
+      acc.push(current)
+      return acc
+    }
+    
+    // 이미 같은 토큰 주소가 있는지 확인
+    const existingIndex = acc.findIndex(h => 
+      h.tokenContractAddress && 
+      h.tokenContractAddress.toLowerCase() === current.tokenContractAddress.toLowerCase()
+    )
+    
+    if (existingIndex === -1) {
+      // 새로운 토큰 주소: 추가
+      acc.push(current)
+    } else {
+      // 같은 토큰 주소가 이미 있음: 보유량이 더 큰 것을 유지
+      const existing = acc[existingIndex]
+      if (current.holdingQuantity > existing.holdingQuantity) {
+        acc[existingIndex] = current
+      }
+      // 보유량이 같거나 적은 경우: 무시 (기존 항목 유지)
+    }
+    
+    return acc
+  }, [] as typeof holdings)
+
+  const totalValuation = uniqueHoldings.reduce((s, h) => s + h.valuation, 0)
 
   return (
     <div>
@@ -99,24 +129,31 @@ export function PortfolioPage() {
       </div>
 
       <h3>보유 현황</h3>
-      {holdings.length === 0 ? (
+      {uniqueHoldings.length === 0 ? (
         <p className="hint">보유 중인 부동산 토큰이 없습니다. 부동산 목록에서 매수해 보세요.</p>
       ) : (
-        <table className="table">
-          <thead>
-            <tr><th>부동산</th><th>보유량</th><th>지분율</th><th>평가금액</th></tr>
-          </thead>
-          <tbody>
-            {holdings.map((h) => (
-              <tr key={h.propertyId}>
-                <td>{h.propertyName}</td>
-                <td>{h.holdingQuantity.toLocaleString()}</td>
-                <td>{h.holdingRatio}%</td>
-                <td>{h.valuation.toLocaleString()}원</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <>
+          <table className="table">
+            <thead>
+              <tr><th>부동산</th><th>보유량</th><th>지분율</th><th>평가금액</th></tr>
+            </thead>
+            <tbody>
+              {uniqueHoldings.map((h) => (
+                <tr key={h.propertyId}>
+                  <td>{h.propertyName}</td>
+                  <td>{h.holdingQuantity.toLocaleString()}</td>
+                  <td>{h.holdingRatio}%</td>
+                  <td>{h.valuation.toLocaleString()}원</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {holdings.length !== uniqueHoldings.length && (
+            <p className="hint" style={{ marginTop: '8px' }}>
+              ※ 동일한 토큰 주소를 공유하는 부동산이 감지되어 하나로 통합하여 표시됩니다.
+            </p>
+          )}
+        </>
       )}
 
       <h3 style={{ marginTop: 28 }}>거래 이력</h3>
@@ -134,7 +171,7 @@ export function PortfolioPage() {
                 <td>{t.type}</td>
                 <td>{t.quantity.toLocaleString()}</td>
                 <td>{t.amount.toLocaleString()}원</td>
-                <td className="addr">{t.txHash?.slice(0, 18)}...</td>
+                <td><TxHashDisplay hash={t.txHash} visibleLength={18} /></td>
               </tr>
             ))}
           </tbody>
