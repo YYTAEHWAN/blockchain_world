@@ -158,7 +158,7 @@ export function DevToolsPage() {
           <div>
             <h4>투자자 계정</h4>
             <dl className="kv">
-              <div><dt>이메일</dt><dd>user1@hanwha.com</dd></div>
+              <div><dt>이메일</dt><dd>user1@rwa.com</dd></div>
               <div><dt>비밀번호</dt><dd>user1234</dd></div>
               <div><dt>지갑 주소</dt><dd>0x7099797...79C8</dd></div>
             </dl>

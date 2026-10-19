@@ -105,7 +105,7 @@ npm run dev
 ## 프로젝트 구조
 
 ```
-forHanwha/
+rwa-prototype/
 ├── contracts/          # 스마트 컨트랙트 (Solidity + Hardhat)
 ├── backend/           # Spring Boot 백엔드
 ├── frontend/          # React 프론트엔드

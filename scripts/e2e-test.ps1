@@ -1,4 +1,4 @@
-﻿# =====================================================================
+# =====================================================================
 # RWA 부동산 조각투자 STO — 전체 시나리오 E2E 통합 테스트 (작업 18)
 #
 # 커버 범위:
@@ -9,7 +9,7 @@
 #   5) KYC 반려 후 재신청
 #
 # 사전조건: Hardhat 노드(8545) + Factory 배포 + 백엔드(8080) 기동
-# 사용법:   cd c:\rwa\forHanwha ; powershell -ExecutionPolicy Bypass -File .\scripts\e2e-test.ps1
+# 사용법:   cd c:\rwa\rwa-prototype ; powershell -ExecutionPolicy Bypass -File .\scripts\e2e-test.ps1
 #
 # 참고: Windows PowerShell 5.1 의 Invoke-RestMethod 는 byte[] 본문/한글 전송이
 #       불안정하여, .NET System.Net.Http.HttpClient 로 UTF-8 요청을 보낸다.

@@ -2,7 +2,7 @@
 # RWA 플랫폼 데모 테스트 스크립트
 # 사용법: 백엔드(8080)와 Hardhat 노드(8545)가 실행 중인 상태에서
 #         PowerShell 새 터미널에서 아래 실행:
-#           cd c:\rwa\forHanwha
+#           cd c:\rwa\rwa-prototype
 #           .\scripts\demo-test.ps1
 # =====================================================================
 

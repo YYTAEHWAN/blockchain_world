@@ -45,7 +45,7 @@ spring:
 # 로깅 설정
 logging:
   level:
-    com.hanwha.rwa.blockchain: DEBUG
+    com.prototype.rwa.blockchain: DEBUG
     org.web3j: DEBUG
     root: INFO
 
