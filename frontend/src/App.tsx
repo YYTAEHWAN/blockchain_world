@@ -54,7 +54,7 @@ function Header() {
   const { user, isAdmin, logout } = useAuth()
   return (
     <header className="app-header">
-      <Link to="/" className="brand">한화 RWA 부동산</Link>
+      <Link to="/" className="brand">RWA 부동산</Link>
       <nav>
         <NavLink to="/" end>부동산</NavLink>
         {user && !isAdmin && (

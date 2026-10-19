@@ -131,7 +131,7 @@ public class DevToolsController {
     private void createSampleInvestors() {
         // 투자자 1
         Investor investor1 = new Investor(
-            "user1@hanwha.com",
+            "user1@rwa.com",
             passwordEncoder.encode("admin1234"), // 모든 계정 비밀번호 통일
             Role.INVESTOR,
             "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" // 하드햇 계정 #1
@@ -140,7 +140,7 @@ public class DevToolsController {
         
         // 투자자 2
         Investor investor2 = new Investor(
-            "user2@hanwha.com",
+            "user2@rwa.com",
             passwordEncoder.encode("admin1234"), // 모든 계정 비밀번호 통일
             Role.INVESTOR,
             "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC" // 하드햇 계정 #2
@@ -149,7 +149,7 @@ public class DevToolsController {
         
         // 투자자 3
         Investor investor3 = new Investor(
-            "user3@hanwha.com",
+            "user3@rwa.com",
             passwordEncoder.encode("admin1234"), // 모든 계정 비밀번호 통일
             Role.INVESTOR,
             "0x90F79bf6EB2c4f870365E785982E1f101E93b906" // 하드햇 계정 #3

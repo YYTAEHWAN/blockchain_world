@@ -129,9 +129,9 @@ export function DevToolsPage() {
           <p className="hint">테스트용 샘플 데이터를 생성합니다.</p>
           <ul style={{ fontSize: '14px', color: '#666', margin: '10px 0' }}>
             <li>관리자 계정: admin@local.test / admin1234</li>
-            <li>투자자 1: user1@hanwha.com / admin1234</li>
-            <li>투자자 2: user2@hanwha.com / admin1234</li>
-            <li>투자자 3: user3@hanwha.com / admin1234</li>
+            <li>투자자 1: user1@rwa.com / admin1234</li>
+            <li>투자자 2: user2@rwa.com / admin1234</li>
+            <li>투자자 3: user3@rwa.com / admin1234</li>
             <li>부동산 3개: 검증 빌딩 1, 2, 3</li>
           </ul>
           <button 
